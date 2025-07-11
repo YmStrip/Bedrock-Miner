@@ -1,5 +1,4 @@
 package xxrexraptorxx.bedrockminer.registry;
-
 import net.minecraft.world.item.*;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredItem;

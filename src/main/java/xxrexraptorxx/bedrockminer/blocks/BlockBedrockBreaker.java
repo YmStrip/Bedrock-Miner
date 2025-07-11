@@ -22,7 +22,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.neoforge.common.Tags;
@@ -34,109 +33,102 @@ import java.util.List;
 
 public class BlockBedrockBreaker extends DirectionalBlock {
 
-    public static final DirectionProperty DIRECTION = BlockStateProperties.VERTICAL_DIRECTION;
-    public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
+	public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
 
-    public BlockBedrockBreaker() {
-        super(Properties.of()
-                .strength(5, 10)
-                .sound(SoundType.STONE)
-                .mapColor(MapColor.COLOR_GRAY)
-        );
-        this.registerDefaultState((BlockState)((BlockState)((BlockState)this.stateDefinition.any()).setValue(DIRECTION, Direction.DOWN)).setValue(POWERED, false));
-    }
-
-
-    @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> list, TooltipFlag flag) {
-        list.add(Component.translatable("message.bedrockminer.bedrock_breaker.desc").withStyle(ChatFormatting.GRAY));
-    }
+	public BlockBedrockBreaker() {
+		super(Properties.of()
+			.strength(5, 10)
+			.sound(SoundType.STONE)
+			.mapColor(MapColor.COLOR_GRAY)
+		);
+		this.registerDefaultState((BlockState) ((BlockState) ((BlockState) this.stateDefinition.any()).setValue(FACING, Direction.DOWN)).setValue(POWERED, false));
+	}
 
 
-    @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
-        pBuilder.add(new Property[]{DIRECTION, POWERED});
-    }
+	@Override
+	public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> list, TooltipFlag flag) {
+		list.add(Component.translatable("message.bedrockminer.bedrock_breaker.desc").withStyle(ChatFormatting.GRAY));
+	}
 
 
-    @Override
-    public BlockState rotate(BlockState pState, Rotation pRot) {
-        return (BlockState)pState.setValue(DIRECTION, pRot.rotate((Direction)pState.getValue(DIRECTION)));
-    }
+	@Override
+	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
+		pBuilder.add(new Property[]{FACING, POWERED});
+	}
 
 
-    @Override
-    public BlockState mirror(BlockState pState, Mirror pMirror) {
-        return pState.rotate(pMirror.getRotation((Direction)pState.getValue(DIRECTION)));
-    }
+	@Override
+	public BlockState rotate(BlockState pState, Rotation pRot) {
+		return (BlockState) pState.setValue(FACING, pRot.rotate((Direction) pState.getValue(FACING)));
+	}
 
 
-    @Nullable
-    @Override
-    public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return this.defaultBlockState().setValue(DIRECTION, context.getNearestLookingVerticalDirection().getOpposite().getOpposite())
-                .setValue(POWERED, Boolean.valueOf(context.getLevel().hasNeighborSignal(context.getClickedPos())));
-    }
+	@Override
+	public BlockState mirror(BlockState pState, Mirror pMirror) {
+		return pState.rotate(pMirror.getRotation((Direction) pState.getValue(FACING)));
+	}
 
 
-    @Override
-    public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource rand) {
-        if (state.getValue(POWERED) && !level.hasNeighborSignal(pos)) {
-            level.setBlock(pos, state.cycle(POWERED), 2);
-        }
-    }
+	@Nullable
+	@Override
+	public BlockState getStateForPlacement(BlockPlaceContext p_55087_) {
+		return (BlockState)this.defaultBlockState().setValue(FACING, p_55087_.getNearestLookingDirection().getOpposite().getOpposite());
+	}
 
 
-    @Override
-    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
-        if (!level.isClientSide) {
-
-            BlockPos harvestBlockPos = state.getValue(BlockStateProperties.VERTICAL_DIRECTION).equals(Direction.DOWN) ? pos.below() : pos.above();
-            BlockPos dropPos = state.getValue(BlockStateProperties.VERTICAL_DIRECTION).equals(Direction.DOWN) ? pos.above() : pos.below();
-            boolean flag = state.getValue(POWERED);
-
-            if (flag != level.hasNeighborSignal(pos)) {
-                if (flag) {
-                    level.scheduleTick(pos, this, 4);
-                    level.playSound((Player)null, pos, SoundEvents.PISTON_CONTRACT, SoundSource.BLOCKS, 0.5F, level.random.nextFloat() * 0.15F + 0.F);
-
-                } else {
-                    Block harvestblock = level.getBlockState(harvestBlockPos).getBlock();
-                    if (harvestblock == ModBlocks.FAKE_BEDROCK.get()) harvestblock = Blocks.BEDROCK;
-
-                    level.playSound((Player)null, pos, SoundEvents.PISTON_EXTEND, SoundSource.BLOCKS, 0.5F, level.random.nextFloat() * 0.15F + 0.F);
-                    level.setBlock(pos, state.cycle(POWERED), 2);
-
-                    if (isValidBlock(harvestblock)) {
-                        level.playSound((Player)null, pos, SoundEvents.STONE_BREAK, SoundSource.BLOCKS, 0.5F, level.random.nextFloat() * 0.15F + 0.F);
-                        ItemEntity item = new ItemEntity(level, (double)dropPos.getX() + 0.5F, (double)dropPos.getY(), (double)dropPos.getZ() + 0.5F, new ItemStack(harvestblock, 1));
-                        level.addFreshEntity(item);
-                        level.destroyBlock(harvestBlockPos, false);
-                        level.addDestroyBlockEffect(pos, harvestblock.defaultBlockState());
-
-                    } else {
-                        level.playSound((Player)null, pos, SoundEvents.ITEM_BREAK, SoundSource.BLOCKS, 0.5F, level.random.nextFloat() * 0.15F + 0.F);
-                    }
-                }
-            }
-
-        }
-    }
+	@Override
+	public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource rand) {
+		if (state.getValue(POWERED) && !level.hasNeighborSignal(pos)) {
+			level.setBlock(pos, state.cycle(POWERED), 2);
+		}
+	}
 
 
-    private static boolean isValidBlock(Block block) {
-        if (Config.HARVEST_ONLY_BEDROCK.get()) {
-            return (block == Blocks.BEDROCK || block == ModBlocks.FAKE_BEDROCK.get());
-        }
+	@Override
+	public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
+		//[Cond]
+		if (level.isClientSide) return;
+		//[Position]
+		var vecFace = state.getValue(BlockStateProperties.FACING).getNormal();
+		var vecDestroy = pos.offset(vecFace);
+		var flag = state.getValue(POWERED);
+		//[?]
+		if (flag == level.hasNeighborSignal(pos)) return;
+		if (flag) {
+			level.scheduleTick(pos, this, 4);
+			level.playSound((Player) null, pos, SoundEvents.PISTON_CONTRACT, SoundSource.BLOCKS, 0.5F, level.random.nextFloat() * 0.15F + 0.F);
+			return;
+		}
+		//[Invoke]
+		Block harvestblock = level.getBlockState(vecDestroy).getBlock();
+		if (harvestblock == ModBlocks.FAKE_BEDROCK.get()) harvestblock = Blocks.BEDROCK;
+		level.playSound((Player) null, pos, SoundEvents.PISTON_EXTEND, SoundSource.BLOCKS, 0.5F, level.random.nextFloat() * 0.15F + 0.F);
+		level.setBlock(pos, state.cycle(POWERED), 2);
+		if (isValidBlock(harvestblock)) {
+			level.playSound((Player) null, pos, SoundEvents.STONE_BREAK, SoundSource.BLOCKS, 0.5F, level.random.nextFloat() * 0.15F + 0.F);
+			ItemEntity item = new ItemEntity(level, (double) vecDestroy.getX() + 0.5F, (double) vecDestroy.getY(), (double) vecDestroy.getZ() + 0.5F, new ItemStack(harvestblock, 1));
+			level.addFreshEntity(item);
+			level.destroyBlock(vecDestroy, false);
+			level.addDestroyBlockEffect(pos, harvestblock.defaultBlockState());
+			return;
+		}
+		level.playSound((Player) null, pos, SoundEvents.ITEM_BREAK, SoundSource.BLOCKS, 0.5F, level.random.nextFloat() * 0.15F + 0.F);
+	}
 
-        return !(block == Blocks.AIR || block == Blocks.COMMAND_BLOCK || block == Blocks.CHAIN_COMMAND_BLOCK || block == Blocks.REPEATING_COMMAND_BLOCK ||
-                block == Blocks.STRUCTURE_BLOCK || block == Blocks.STRUCTURE_VOID || block == Blocks.BARRIER || new ItemStack(block).is(ItemTags.LEAVES) ||
-                new ItemStack(block).is(ItemTags.FLOWERS)  || new ItemStack(block).is(Tags.Items.CROPS));
-    }
+
+	private static boolean isValidBlock(Block block) {
+		if (Config.HARVEST_ONLY_BEDROCK.get()) {
+			return (block == Blocks.BEDROCK || block == ModBlocks.FAKE_BEDROCK.get());
+		}
+
+		return !(block == Blocks.AIR || block == Blocks.COMMAND_BLOCK || block == Blocks.CHAIN_COMMAND_BLOCK || block == Blocks.REPEATING_COMMAND_BLOCK ||
+			block == Blocks.STRUCTURE_BLOCK || block == Blocks.STRUCTURE_VOID || block == Blocks.BARRIER || new ItemStack(block).is(ItemTags.LEAVES) ||
+			new ItemStack(block).is(ItemTags.FLOWERS) || new ItemStack(block).is(Tags.Items.CROPS));
+	}
 
 
-    @Override
-    protected MapCodec<? extends DirectionalBlock> codec() {
-        return null;
-    }
+	@Override
+	protected MapCodec<? extends DirectionalBlock> codec() {
+		return null;
+	}
 }
