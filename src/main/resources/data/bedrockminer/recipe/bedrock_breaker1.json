@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+  
+    "X"
+    
+  ],
+  "key": {
+    "X": {
+      "item": "bedrockminer:bedrock_breaker_void"
+    }
+  },
+  
+  
+  "result": {
+    "id": "bedrockminer:bedrock_breaker"
+  }
+}

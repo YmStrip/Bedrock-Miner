@@ -2,12 +2,15 @@
     "itemGroup.bedrockminer_tab": "Bedrock Miner",
 
     "message.bedrockminer.bedrock_breaker.desc": "Needs redstone power",
+    "message.bedrockminer.bedrock_breaker_void.desc": "Needs redstone power , automatically destroy the item",
     "message.bedrockminer.bedrock_chunk_jei_desc": "Can rarely be found in stronghold, bastion and end city chests or from Wandering Traders.",
 
     "block.bedrockminer.bedrock_infused_obsidian": "Bedrock Infused Obsidian",
     "block.bedrockminer.bedrock_infused_stone": "Bedrock Infused Stone",
     "block.bedrockminer.bedrock_breaker": "Bedrock Breaker",
     "block.bedrockminer.bedrock_breaker_on": "Bedrock Breaker",
+    "block.bedrockminer.bedrock_breaker_void": "Bedrock Breaker Void",
+    "block.bedrockminer.bedrock_breaker_void_on": "Bedrock Breaker Void",
     "block.bedrockminer.fake_bedrock": "Bedrock",
 
     "item.bedrockminer.bedrock_chunk": "Bedrock Chunk",

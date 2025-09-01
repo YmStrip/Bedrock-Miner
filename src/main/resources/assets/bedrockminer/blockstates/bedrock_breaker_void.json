@@ -1,0 +1,55 @@
+{
+    "variants": {
+        "facing=down,powered=false": {
+            "model": "bedrockminer:block/bedrock_breaker_void"
+        },
+        "facing=down,powered=true": {
+            "model": "bedrockminer:block/bedrock_breaker_void_on"
+        },
+        "facing=up,powered=false": {
+            "model": "bedrockminer:block/bedrock_breaker_void",
+            "x": 180
+        },
+        "powered=true,facing=up": {
+            "model": "bedrockminer:block/bedrock_breaker_void_on",
+            "x": 180
+        },
+        "powered=false,facing=north": {
+            "model": "bedrockminer:block/bedrock_breaker_void",
+            "x": -90
+        },
+        "powered=true,facing=north": {
+            "model": "bedrockminer:block/bedrock_breaker_void_on",
+            "x": -90
+        },
+        "powered=false,facing=south": {
+            "model": "bedrockminer:block/bedrock_breaker_void",
+            "x": 90
+        },
+        "powered=true,facing=south": {
+            "model": "bedrockminer:block/bedrock_breaker_void_on",
+            "x": 90
+        },
+        "powered=false,facing=west": {
+            "model": "bedrockminer:block/bedrock_breaker_void",
+            "x": -90,
+            "y": -90
+        },
+        "powered=true,facing=west": {
+            "model": "bedrockminer:block/bedrock_breaker_void_on",
+            "x": -90,
+            "y": -90
+        },
+        "powered=false,facing=east": {
+            "model": "bedrockminer:block/bedrock_breaker_void",
+            "y": 90,
+            "x": -90
+        },
+        "powered=true,facing=east": {
+            "model": "bedrockminer:block/bedrock_breaker_void_on",
+            "y": 90,
+            "x": -90
+        }
+    }
+}
+

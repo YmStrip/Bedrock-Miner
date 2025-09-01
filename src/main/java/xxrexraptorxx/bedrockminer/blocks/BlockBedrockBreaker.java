@@ -5,11 +5,9 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -23,7 +21,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.neoforge.common.Tags;
 import xxrexraptorxx.bedrockminer.registry.ModBlocks;
@@ -33,7 +30,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class BlockBedrockBreaker extends DirectionalBlock {
-
+	public boolean dropItem = true;
 	public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
 
 	public BlockBedrockBreaker() {
@@ -91,8 +88,10 @@ public class BlockBedrockBreaker extends DirectionalBlock {
 		//
 		if (isValidBlock(harvestblock)) {
 			level.playSound((Player) null, pos, SoundEvents.STONE_BREAK, SoundSource.BLOCKS, 0.5F, level.random.nextFloat() * 0.15F + 0.F);
-			ItemEntity item = new ItemEntity(level, (double) vecDestroy.getX() + 0.5F, (double) vecDestroy.getY(), (double) vecDestroy.getZ() + 0.5F, new ItemStack(harvestblock, 1));
-			level.addFreshEntity(item);
+			if (dropItem) {
+				ItemEntity item = new ItemEntity(level, (double) vecDestroy.getX() + 0.5F, (double) vecDestroy.getY(), (double) vecDestroy.getZ() + 0.5F, new ItemStack(harvestblock, 1));
+				level.addFreshEntity(item);
+			}
 			level.destroyBlock(vecDestroy, false);
 			level.addDestroyBlockEffect(pos, harvestblock.defaultBlockState());
 		}

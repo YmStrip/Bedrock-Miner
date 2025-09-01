@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+  
+    "XO"
+    
+  ],
+  "key": {
+    "X": {
+      "item": "bedrockminer:bedrock_breaker"
+    },
+    "O": {
+      "item": "minecraft:slime_ball"
+    }
+  },
+  
+  
+  "result": {
+    "id": "bedrockminer:bedrock_breaker_void"
+  }
+}
