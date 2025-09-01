@@ -32,19 +32,23 @@
         },
         "powered=false,facing=west": {
             "model": "bedrockminer:block/bedrock_breaker",
-            "y": 90
+            "x": -90,
+            "y": -90
         },
         "powered=true,facing=west": {
             "model": "bedrockminer:block/bedrock_breaker_on",
-            "y": 90
+            "x": -90,
+            "y": -90
         },
         "powered=false,facing=east": {
             "model": "bedrockminer:block/bedrock_breaker",
-            "y": -90
+            "y": 90,
+            "x": -90
         },
         "powered=true,facing=east": {
             "model": "bedrockminer:block/bedrock_breaker_on",
-            "y": -90
+            "y": 90,
+            "x": -90
         }
     }
 }

@@ -17,6 +17,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.SignalGetter;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -53,7 +54,7 @@ public class BlockBedrockBreaker extends DirectionalBlock {
 
 	@Override
 	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
-		pBuilder.add(new Property[]{FACING, POWERED});
+		pBuilder.add(FACING, POWERED);
 	}
 
 
@@ -72,47 +73,81 @@ public class BlockBedrockBreaker extends DirectionalBlock {
 	@Nullable
 	@Override
 	public BlockState getStateForPlacement(BlockPlaceContext p_55087_) {
-		return (BlockState)this.defaultBlockState().setValue(FACING, p_55087_.getNearestLookingDirection().getOpposite().getOpposite());
+		return (BlockState) this.defaultBlockState().setValue(FACING, p_55087_.getNearestLookingDirection().getOpposite().getOpposite());
 	}
-
-
-	@Override
-	public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource rand) {
-		if (state.getValue(POWERED) && !level.hasNeighborSignal(pos)) {
-			level.setBlock(pos, state.cycle(POWERED), 2);
-		}
-	}
-
-
-	@Override
-	public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
-		//[Cond]
-		if (level.isClientSide) return;
-		//[Position]
+	//===================================
+	//[controller]
+	public void onOpen(BlockState state, Level level, BlockPos pos) {
+		if (state.getValue(POWERED)) return;
+		state.setValue(POWERED, true);
+		//
 		var vecFace = state.getValue(BlockStateProperties.FACING).getNormal();
 		var vecDestroy = pos.offset(vecFace);
-		var flag = state.getValue(POWERED);
-		//[?]
-		if (flag == level.hasNeighborSignal(pos)) return;
-		if (flag) {
-			level.scheduleTick(pos, this, 4);
-			level.playSound((Player) null, pos, SoundEvents.PISTON_CONTRACT, SoundSource.BLOCKS, 0.5F, level.random.nextFloat() * 0.15F + 0.F);
-			return;
-		}
-		//[Invoke]
+		//
 		Block harvestblock = level.getBlockState(vecDestroy).getBlock();
 		if (harvestblock == ModBlocks.FAKE_BEDROCK.get()) harvestblock = Blocks.BEDROCK;
-		level.playSound((Player) null, pos, SoundEvents.PISTON_EXTEND, SoundSource.BLOCKS, 0.5F, level.random.nextFloat() * 0.15F + 0.F);
-		level.setBlock(pos, state.cycle(POWERED), 2);
+		//
+		level.scheduleTick(pos, this, 4);
+		//
 		if (isValidBlock(harvestblock)) {
 			level.playSound((Player) null, pos, SoundEvents.STONE_BREAK, SoundSource.BLOCKS, 0.5F, level.random.nextFloat() * 0.15F + 0.F);
 			ItemEntity item = new ItemEntity(level, (double) vecDestroy.getX() + 0.5F, (double) vecDestroy.getY(), (double) vecDestroy.getZ() + 0.5F, new ItemStack(harvestblock, 1));
 			level.addFreshEntity(item);
 			level.destroyBlock(vecDestroy, false);
 			level.addDestroyBlockEffect(pos, harvestblock.defaultBlockState());
-			return;
 		}
+		level.playSound((Player) null, pos, SoundEvents.PISTON_CONTRACT, SoundSource.BLOCKS, 0.5F, level.random.nextFloat() * 0.15F + 0.F);
 		level.playSound((Player) null, pos, SoundEvents.ITEM_BREAK, SoundSource.BLOCKS, 0.5F, level.random.nextFloat() * 0.15F + 0.F);
+		level.setBlock(pos, state.cycle(POWERED), 2);
+	}
+	public void onClose(BlockState state, Level level, BlockPos pos) {
+		if (!state.getValue(POWERED)) return;
+		state.setValue(POWERED, false);
+		level.playSound((Player) null, pos, SoundEvents.PISTON_EXTEND, SoundSource.BLOCKS, 0.5F, level.random.nextFloat() * 0.15F + 0.F);
+		level.setBlock(pos, state.cycle(POWERED), 2);
+	}
+	public void onChange(BlockState state, Level level, BlockPos pos) {
+		var stateOld = state.getValue(POWERED);
+		var stateNew = getNeighborSignal(level, pos, state.getValue(BlockStateProperties.FACING));
+		if (stateOld && !stateNew) onClose(state, level, pos);
+		else if (stateNew && !stateOld) onOpen(state, level, pos);
+	}
+	//[controller] pipe
+	@Override
+	public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
+		//[Cond]
+		if (level.isClientSide) return;
+		onChange(state, level, pos);
+	}
+	//===================================
+	private boolean getNeighborSignal(SignalGetter p_277378_, BlockPos p_60179_, Direction p_60180_) {
+		Direction[] var4 = Direction.values();
+		int var5 = var4.length;
+
+		int var6;
+		for (var6 = 0; var6 < var5; ++var6) {
+			Direction direction = var4[var6];
+			if (direction != p_60180_ && p_277378_.hasSignal(p_60179_.relative(direction), direction)) {
+				return true;
+			}
+		}
+
+		if (p_277378_.hasSignal(p_60179_, Direction.DOWN)) {
+			return true;
+		} else {
+			BlockPos blockpos = p_60179_.above();
+			Direction[] var10 = Direction.values();
+			var6 = var10.length;
+
+			for (int var11 = 0; var11 < var6; ++var11) {
+				Direction direction1 = var10[var11];
+				if (direction1 != Direction.DOWN && p_277378_.hasSignal(blockpos.relative(direction1), direction1)) {
+					return true;
+				}
+			}
+
+			return false;
+		}
 	}
 
 

@@ -1,0 +1,39 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:material",
+      "values": [
+        {
+          "type": "neoforge:tag_empty",
+          "tag": "c:sticks/diamond"
+        },
+        {
+          "type": "neoforge:tag_empty",
+          "tag": "c:rods/diamond"
+        }
+      ]
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+  
+    "XX",
+    "X#",
+    " #"
+    
+  ],
+  "key": {
+    "#": {
+      "tag": "c:gems/diamond"
+    },
+    "X": {
+      "item": "minecraft:bedrock"
+    }
+  },
+  
+  
+  "result": {
+    "id": "bedrockminer:bedrock_axe"
+  }
+}

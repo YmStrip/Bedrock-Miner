@@ -1,14 +1,20 @@
 {
-  "type": "minecraft:crafting_shapeless",
-  "category": "misc",
-  "ingredients": [
-    {
-      "item": "minecraft:bedrock"
-    }
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "UUU",
+    "UXU",
+    "UUU"
   ],
-  
+  "key": {
+    "X": {
+      "item": "minecraft:nether_star"
+    },
+    "U": {
+      "item": "minecraft:tnt"
+    }
+  },
   "result": {
-    "id": "bedrockminer:bedrock_chunk",
-    "count": 9
+    "id": "bedrockminer:bedrock_chunk"
   }
 }
